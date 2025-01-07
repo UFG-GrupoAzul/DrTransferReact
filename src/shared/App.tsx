@@ -1,25 +1,18 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Home from '../pages/Home';
 import Paciente from '../pages/Paciente';
 
-function App() {
 
-
-
+const App: React.FC = () => {
   return (
-
-
-    
-    <Router>
+    <BrowserRouter>
       <Routes>
-        <Route path="*" >
-          <Route index element = {<Home/>}/>
-        </Route>
         <Route path="/" element={<Home />} />
         <Route path="/paciente" element={<Paciente />} />
       </Routes>
-    </Router>
+    </BrowserRouter>
   );
-}
+};
 
 export default App;

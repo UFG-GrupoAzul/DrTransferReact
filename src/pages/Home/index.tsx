@@ -1,13 +1,13 @@
+import React from 'react';
 import { Link } from 'react-router-dom';
-import Paciente from '../Paciente'
 
-function Home() {
+const Home: React.FC = () => {
   return (
     <div>
-      <h1>Bem-vindo à Página Inicial</h1>
-      <Link to= './paciente'>Ir para Pacientes</Link>
+      <h1>Página Inicial</h1>
+      <Link to="/paciente">Ir para a Página do Paciente</Link>
     </div>
   );
-}
+};
 
 export default Home;
