@@ -76,7 +76,7 @@ const Paciente: React.FC = () => {
           <li key={patient.id}>
             Nome: {patient.person.name}
             <li>CPF: {patient.person.cpf} </li>
-            <li>Gênero: {patient.person.gender}</li>
+            <br></br>
 
           </li>
         ))}

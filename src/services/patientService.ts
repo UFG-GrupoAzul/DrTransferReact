@@ -13,3 +13,10 @@ export const createPatient = async (patientData: any) => {
   const response = await axios.post(API_URL, patientData);
   return response.data;
 }
+
+export const deletePatient = async (patientData: any) =>
+{
+  const response = await axios.delete(API_URL,patientData)
+  return response.data;
+
+}
