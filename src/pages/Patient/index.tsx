@@ -10,6 +10,7 @@ interface Patient {
     name: string;
     cpf: string;
     gender: string;
+    
   };
 }
 const Paciente: React.FC = () => {
@@ -23,10 +24,14 @@ const Paciente: React.FC = () => {
     name: '',
     cpf: '',
     gender: '',
+    bloodType: 'O_POSITIVE', // mock
+    phone:'99999',// mock
+    birthDate: '1999-09-09'// mock
+
   })
 
   //chamando API GET
-  useEffect(() => {
+  useEffect(() => { // useEffect para chamadas automáticas
     const fetchPatients = async () => {
       //chama getPatients do service
       const data = await getPatients();
@@ -40,7 +45,8 @@ const Paciente: React.FC = () => {
   //POST
   /*Método pra atualizar o estado conforme input
   evento captura mudanças no input ou no select
-  extrai os valores dessa entrada do user e atualiza o estado copiando os valores existentes*/
+  extrai os valores dessa entrada do user e atualiza o estado copiando os valores existentes
+  Não usa useEffect porque é disparada por evento*/
   const handleUserInput = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target
     /*const name = e.target.name;
@@ -52,8 +58,8 @@ const Paciente: React.FC = () => {
   //Função p/ enviar dados 
   const handleCreatePatient = async () => {
     await createPatient(newPatient) //envia pro back
-    const updatedPatients = await getPatients(); //atualiza lista (novo get)
-    setPatients(updatedPatients);
+    const updatedPatients = await getPatients(); //chama outro GET após o POST
+    setPatients(updatedPatients); //atualiza o estado patients após novo GET
   }
 
   //Render abaixo
@@ -80,8 +86,8 @@ const Paciente: React.FC = () => {
 
       <div>
         <h3>Adicionar Paciente</h3>
-        <input
-          type="text"
+        <input 
+          type="text" 
           name="name"
           placeholder="Nome"
           value={newPatient.name}
@@ -94,11 +100,7 @@ const Paciente: React.FC = () => {
           value={newPatient.cpf} // Valor atual do campo "cpf" no estado
           onChange={handleUserInput} // Atualiza o estado quando o usuário digita
         />
-        <select
-          name="gender"
-          value={newPatient.gender} // Valor atual do campo "gender" no estado
-          onChange={handleUserInput} // Atualiza o estado quando o usuário seleciona uma opção
-        >
+        <select name="gender" value={newPatient.gender} onChange={handleUserInput}>
           <option value="">Selecione o gênero</option>
           <option value="MALE">Masculino</option>
           <option value="FEMALE">Feminino</option>
