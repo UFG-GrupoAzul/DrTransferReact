@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { createPatient, getPatients } from '../../services/patientService';
+import { createPatient, deletePatient, getPatients } from '../../services/patientService';
+import { Options , Select} from '../../components/Select';
 
 
 //Interface pra definir o que tem nessa entidade
@@ -10,12 +11,33 @@ interface Patient {
     name: string;
     cpf: string;
     gender: string;
-    
+
   };
 }
-const Paciente: React.FC = () => {
+const Paciente = () => {
 
-  //Estado p/ receber do GET [variável de estado, método atualizador da variável]
+  const genders: Options[] = [{
+    value: '',
+    label: 'Selecione uma opção.'
+
+  },
+  {
+    value: 'FEMALE',
+    label: 'Feminino'
+  }, {
+    value: 'MALE',
+    label: 'Masculino'
+  }]
+
+
+  //atualizar lista após modificação
+  const updateScreen = async () => {
+    const updatedPatients = await getPatients();
+    setPatients(updatedPatients);
+  }
+
+
+  //Estado p/ receber do GET [variável de estado, Função atualizadora da variável
   const [patients, setPatients] = useState<Patient[]>([]); //useState inicializa com array vazio
 
 
@@ -25,7 +47,7 @@ const Paciente: React.FC = () => {
     cpf: '',
     gender: '',
     bloodType: 'O_POSITIVE', // mock
-    phone:'99999',// mock
+    phone: '99999',// mock
     birthDate: '1999-09-09'// mock
 
   })
@@ -43,7 +65,7 @@ const Paciente: React.FC = () => {
 
 
   //POST
-  /*Método pra atualizar o estado conforme input
+  /*Função pra atualizar o estado conforme input
   evento captura mudanças no input ou no select
   extrai os valores dessa entrada do user e atualiza o estado copiando os valores existentes
   Não usa useEffect porque é disparada por evento*/
@@ -58,8 +80,13 @@ const Paciente: React.FC = () => {
   //Função p/ enviar dados 
   const handleCreatePatient = async () => {
     await createPatient(newPatient) //envia pro back
-    const updatedPatients = await getPatients(); //chama outro GET após o POST
-    setPatients(updatedPatients); //atualiza o estado patients após novo GET
+    updateScreen();
+  }
+
+  //DELETE
+  const handleDeletePatient = async (id: string) => {
+    await deletePatient(id) //chama deleção do service
+    updateScreen();
   }
 
   //Render abaixo
@@ -74,8 +101,10 @@ const Paciente: React.FC = () => {
       <ul>
         {patients.map((patient) => (
           <li key={patient.id}>
-            Nome: {patient.person.name}
-            <li>CPF: {patient.person.cpf} </li>
+            <span>
+              Nome: {patient.person.name} - CPF: {patient.person.cpf} - Gênero:{genders.find((gender) => gender.value === patient.person.gender)?.label || 'Gênero desconhecido'}
+            </span>
+            <button onClick={() => handleDeletePatient(patient.id)}>Remover</button>
             <br></br>
 
           </li>
@@ -86,25 +115,32 @@ const Paciente: React.FC = () => {
 
       <div>
         <h3>Adicionar Paciente</h3>
-        <input 
-          type="text" 
+        <input
+          type="text"
           name="name"
           placeholder="Nome"
           value={newPatient.name}
           onChange={handleUserInput}
         />
+
         <input
           type="text"
           name="cpf"
           placeholder="CPF"
-          value={newPatient.cpf} // Valor atual do campo "cpf" no estado
-          onChange={handleUserInput} // Atualiza o estado quando o usuário digita
+          value={newPatient.cpf} 
+          onChange={handleUserInput} 
         />
-        <select name="gender" value={newPatient.gender} onChange={handleUserInput}>
-          <option value="">Selecione o gênero</option>
-          <option value="MALE">Masculino</option>
-          <option value="FEMALE">Feminino</option>
-        </select>
+    
+        <Select
+
+          name="gender"
+          label="Gênero"
+          value={newPatient.gender}
+          onChange={handleUserInput}
+          options={genders}
+        />
+
+
         <button onClick={handleCreatePatient}>Adicionar Paciente</button>
       </div>
     </div>

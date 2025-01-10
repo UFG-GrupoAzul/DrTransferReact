@@ -14,9 +14,9 @@ export const createPatient = async (patientData: any) => {
   return response.data;
 }
 
-export const deletePatient = async (patientData: any) =>
+export const deletePatient = async (id: string) =>
 {
-  const response = await axios.delete(API_URL,patientData)
+  const response = await axios.delete(`${API_URL}/${id}`)
   return response.data;
 
 }
