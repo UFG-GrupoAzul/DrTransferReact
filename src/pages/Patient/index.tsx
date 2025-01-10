@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { createPatient, deletePatient, getPatients } from '../../services/patientService';
 import { Options , Select} from '../../components/Select';
+import {InputText} from '../../components/InputText'
 
 
 //Interface pra definir o que tem nessa entidade
@@ -115,24 +116,25 @@ const Paciente = () => {
 
       <div>
         <h3>Adicionar Paciente</h3>
-        <input
+        <InputText
           type="text"
           name="name"
           placeholder="Nome"
           value={newPatient.name}
+          label = "Nome"
           onChange={handleUserInput}
         />
 
-        <input
+        <InputText
           type="text"
           name="cpf"
           placeholder="CPF"
           value={newPatient.cpf} 
+          label="CPF"
           onChange={handleUserInput} 
         />
     
         <Select
-
           name="gender"
           label="Gênero"
           value={newPatient.gender}
