@@ -3,10 +3,11 @@ import { Link } from 'react-router-dom';
 import { createPatient, deletePatient, getPatients } from '../../services/patientService';
 import { Options , Select} from '../../components/Select';
 import {InputText} from '../../components/InputText'
+import ListEntity from '../../components/ListEntity';
 
 
 //Interface pra definir o que tem nessa entidade
-interface Patient {
+export interface Patient {
   id: string;
   person: {
     name: string;
@@ -15,7 +16,7 @@ interface Patient {
 
   };
 }
-const Paciente = () => {
+const Patient = () => {
 
   const genders: Options[] = [{
     value: '',
@@ -98,21 +99,7 @@ const Paciente = () => {
 
 
       {/* Exibição da lista de Pacientes */}
-      <h2>Pacientes:</h2>
-      <ul>
-        {patients.map((patient) => (
-          <li key={patient.id}>
-            <span>
-              Nome: {patient.person.name} - CPF: {patient.person.cpf} - Gênero:{genders.find((gender) => gender.value === patient.person.gender)?.label || 'Gênero desconhecido'}
-            </span>
-            <button onClick={() => handleDeletePatient(patient.id)}>Remover</button>
-            <br></br>
-
-          </li>
-        ))}
-
-
-      </ul>
+      <ListEntity patients = {patients} onDelete = {handleDeletePatient} genders = {genders}/>
 
       <div>
         <h3>Adicionar Paciente</h3>
@@ -149,4 +136,4 @@ const Paciente = () => {
   );
 };
 
-export default Paciente;
+export default Patient;
