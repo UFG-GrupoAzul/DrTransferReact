@@ -1,137 +1,146 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { createPatient, deletePatient, getPatients } from '../../services/patientService';
-import { Options , Select} from '../../components/Select';
-import {InputText} from '../../components/InputText'
-import ListEntity from '../../components/ListEntity';
+import { useState } from 'react';
+import Panel from '../../components/Panel';
+import DataTable from '../../components/DataTable';
+import { InputText } from '../../components/InputText';
+import { Select } from '../../components/Select';
+import './styles.css';
 
-
-//Interface pra definir o que tem nessa entidade
 export interface Patient {
-  id: string;
-  person: {
-    name: string;
-    cpf: string;
-    gender: string;
-
-  };
+  id: number;
+  name: string;
+  cpf: string;
+  gender: string;
 }
+
+interface ListEntityProps {
+  patients: Patient[];
+  onDelete: (id: number) => void;
+  genders: { value: string; label: string; }[];
+}
+
+const ListEntity = ({ patients, onDelete, genders }: ListEntityProps) => {
+  const columns = [
+    { field: 'name' as const, header: 'Nome' },
+    { field: 'cpf' as const, header: 'CPF' },
+    { 
+      field: 'gender' as const, 
+      header: 'Gênero',
+      render: (patient: Patient) => {
+        const gender = genders.find(g => g.value === patient.gender);
+        return gender ? gender.label : patient.gender;
+      }
+    },
+    {
+      field: 'id' as const,
+      header: 'Ações',
+      render: (patient: Patient) => (
+        <button onClick={() => onDelete(patient.id)} className="delete-button">
+          Excluir
+        </button>
+      )
+    }
+  ];
+
+  return (
+    <DataTable
+      data={patients}
+      columns={columns}
+    />
+  );
+};
+
 const Patient = () => {
-
-  const genders: Options[] = [{
-    value: '',
-    label: 'Selecione uma opção.'
-
-  },
-  {
-    value: 'FEMALE',
-    label: 'Feminino'
-  }, {
-    value: 'MALE',
-    label: 'Masculino'
-  }]
-
-
-  //atualizar lista após modificação
-  const updateScreen = async () => {
-    const updatedPatients = await getPatients();
-    setPatients(updatedPatients);
-  }
-
-
-  //Estado p/ receber do GET [variável de estado, Função atualizadora da variável
-  const [patients, setPatients] = useState<Patient[]>([]); //useState inicializa com array vazio
-
-
-  //Estado p/ guardar input do user no form [objeto novoPaciente, método atualizador do objeto]  
   const [newPatient, setNewPatient] = useState({
     name: '',
     cpf: '',
-    gender: '',
-    bloodType: 'O_POSITIVE', // mock
-    phone: '99999',// mock
-    birthDate: '1999-09-09'// mock
+    gender: ''
+  });
 
-  })
+  const genders = [
+    { value: 'M', label: 'Masculino' },
+    { value: 'F', label: 'Feminino' },
+    { value: 'O', label: 'Outro' }
+  ];
 
-  //chamando API GET
-  useEffect(() => { // useEffect para chamadas automáticas
-    const fetchPatients = async () => {
-      //chama getPatients do service
-      const data = await getPatients();
-      setPatients(data); //setPatients atualizando patients
-    };
-
-    fetchPatients(); //chamando a função 
-  }, []); //array vazio é como faz isso ser carregado apenas uma vez (quando chama o componente)
-
-
-  //POST
-  /*Função pra atualizar o estado conforme input
-  evento captura mudanças no input ou no select
-  extrai os valores dessa entrada do user e atualiza o estado copiando os valores existentes
-  Não usa useEffect porque é disparada por evento*/
   const handleUserInput = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target
-    /*const name = e.target.name;
-    const value = e.target.value;*/
-    setNewPatient({ ...newPatient, [name]: value });
-  }
+    const { name, value } = e.target;
+    setNewPatient(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
 
-  //POST
-  //Função p/ enviar dados 
-  const handleCreatePatient = async () => {
-    await createPatient(newPatient) //envia pro back
-    updateScreen();
-  }
+  const handleCreatePatient = () => {
+    // Implementação do handleCreatePatient
+  };
 
-  //DELETE
-  const handleDeletePatient = async (id: string) => {
-    await deletePatient(id) //chama deleção do service
-    updateScreen();
-  }
+  const handleDeletePatient = (id: number) => {
+    // Implementação do handleDeletePatient
+  };
 
-  //Render abaixo
+  // Exemplo de dados - substitua pela sua implementação real
+  const patients = [
+    { id: 1, name: 'João Silva', cpf: '123.456.789-00', gender: 'M' },
+    { id: 2, name: 'Maria Santos', cpf: '987.654.321-00', gender: 'F' }
+  ];
+
   return (
     <div>
-      <h1>Página do Paciente</h1>
-      <Link to="/">Voltar para Home</Link>
+      <Panel title="Cadastro de Paciente">
+        <div className="form-grid">
+          <div className="col-4">
+            <div className="form-group">
+              <InputText
+                type="text"
+                name="name"
+                placeholder="Nome"
+                value={newPatient.name}
+                label="Nome"
+                onChange={handleUserInput}
+              />
+            </div>
+          </div>
 
+          <div className="col-4">
+            <div className="form-group">
+              <InputText
+                type="text"
+                name="cpf"
+                placeholder="CPF"
+                value={newPatient.cpf}
+                label="CPF"
+                onChange={handleUserInput}
+              />
+            </div>
+          </div>
 
-      {/* Exibição da lista de Pacientes */}
-      <ListEntity patients = {patients} onDelete = {handleDeletePatient} genders = {genders}/>
+          <div className="col-4">
+            <div className="form-group">
+              <Select
+                name="gender"
+                label="Gênero"
+                value={newPatient.gender}
+                onChange={handleUserInput}
+                options={genders}
+              />
+            </div>
+          </div>
 
-      <div>
-        <h3>Adicionar Paciente</h3>
-        <InputText
-          type="text"
-          name="name"
-          placeholder="Nome"
-          value={newPatient.name}
-          label = "Nome"
-          onChange={handleUserInput}
+          <div className="form-actions">
+            <button className="btn-primary" onClick={handleCreatePatient}>
+              Adicionar Paciente
+            </button>
+          </div>
+        </div>
+      </Panel>
+
+      <Panel title="Lista de Pacientes">
+        <ListEntity 
+          patients={patients}
+          onDelete={handleDeletePatient}
+          genders={genders}
         />
-
-        <InputText
-          type="text"
-          name="cpf"
-          placeholder="CPF"
-          value={newPatient.cpf} 
-          label="CPF"
-          onChange={handleUserInput} 
-        />
-    
-        <Select
-          name="gender"
-          label="Gênero"
-          value={newPatient.gender}
-          onChange={handleUserInput}
-          options={genders}
-        />
-
-
-        <button onClick={handleCreatePatient}>Adicionar Paciente</button>
-      </div>
+      </Panel>
     </div>
   );
 };

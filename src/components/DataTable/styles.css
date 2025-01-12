@@ -1,0 +1,45 @@
+.datatable-wrapper {
+  background: white;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow-x: auto;
+}
+
+.datatable {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.datatable-header {
+  background-color: #f8f9fa;
+  color: #495057;
+  font-weight: 600;
+  padding: 0.75rem 1rem;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.datatable-cell {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #dee2e6;
+  color: #212529;
+}
+
+.datatable tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.datatable tr.clickable {
+  cursor: pointer;
+}
+
+.datatable tr.clickable:hover {
+  background-color: #e9ecef;
+}
+
+.datatable-no-data {
+  text-align: center;
+  padding: 2rem;
+  color: #6c757d;
+  font-style: italic;
+} 
