@@ -12,43 +12,6 @@ export interface Patient {
   gender: string;
 }
 
-interface ListEntityProps {
-  patients: Patient[];
-  onDelete: (id: number) => void;
-  genders: { value: string; label: string; }[];
-}
-
-const ListEntity = ({ patients, onDelete, genders }: ListEntityProps) => {
-  const columns = [
-    { field: 'name' as const, header: 'Nome' },
-    { field: 'cpf' as const, header: 'CPF' },
-    { 
-      field: 'gender' as const, 
-      header: 'Gênero',
-      render: (patient: Patient) => {
-        const gender = genders.find(g => g.value === patient.gender);
-        return gender ? gender.label : patient.gender;
-      }
-    },
-    {
-      field: 'id' as const,
-      header: 'Ações',
-      render: (patient: Patient) => (
-        <button onClick={() => onDelete(patient.id)} className="delete-button">
-          Excluir
-        </button>
-      )
-    }
-  ];
-
-  return (
-    <DataTable
-      data={patients}
-      columns={columns}
-    />
-  );
-};
-
 const Patient = () => {
   const [newPatient, setNewPatient] = useState({
     name: '',
@@ -78,10 +41,36 @@ const Patient = () => {
     // Implementação do handleDeletePatient
   };
 
+  const handleEditPatient = (patient: Patient) => {
+    // Implementação do handleEditPatient
+  };
+
   // Exemplo de dados - substitua pela sua implementação real
   const patients = [
     { id: 1, name: 'João Silva', cpf: '123.456.789-00', gender: 'M' },
     { id: 2, name: 'Maria Santos', cpf: '987.654.321-00', gender: 'F' }
+  ];
+
+  const columns = [
+    { field: 'name' as const, header: 'Nome' },
+    { field: 'cpf' as const, header: 'CPF' },
+    { 
+      field: 'gender' as const, 
+      header: 'Gênero',
+      render: (patient: Patient) => {
+        const gender = genders.find(g => g.value === patient.gender);
+        return gender ? gender.label : patient.gender;
+      }
+    },
+    {
+      field: 'id' as const,
+      header: 'Ações',
+      render: (patient: Patient) => (
+        <button onClick={() => handleDeletePatient(patient.id)} className="delete-button">
+          Excluir
+        </button>
+      )
+    }
   ];
 
   return (
@@ -135,10 +124,12 @@ const Patient = () => {
       </Panel>
 
       <Panel title="Lista de Pacientes">
-        <ListEntity 
-          patients={patients}
-          onDelete={handleDeletePatient}
-          genders={genders}
+        <DataTable 
+          data={patients}
+          columns={columns}
+          title="Pacientes Cadastrados"
+          showEditButton={true}
+          onEdit={handleEditPatient}
         />
       </Panel>
     </div>

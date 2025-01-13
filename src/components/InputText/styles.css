@@ -1,0 +1,52 @@
+.form-floating {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.form-floating input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.625rem;
+  font-size: 1rem;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  background-color: #fff;
+  color: #495057;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-floating label {
+  position: absolute;
+  left: 0.625rem;
+  top: 0.625rem;
+  font-size: 1rem;
+  color: #6c757d;
+  pointer-events: none;
+  transition: all 0.2s ease-in-out;
+  background-color: transparent;
+  padding: 0 0.25rem;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.form-floating input:focus,
+.form-floating input:not(:placeholder-shown) {
+  padding: 0.625rem;
+}
+
+.form-floating input:focus ~ label,
+.form-floating input:not(:placeholder-shown) ~ label {
+  transform: translateY(-1.4rem) scale(0.85);
+  background-color: white;
+  color: #2196F3;
+}
+
+.form-floating input:focus {
+  border-color: #2196F3;
+  box-shadow: 0 0 0 0.2rem rgba(33, 150, 243, 0.25);
+  outline: none;
+}
+
+.form-floating input::placeholder {
+  color: transparent;
+} 

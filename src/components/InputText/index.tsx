@@ -1,22 +1,18 @@
 import React, { ChangeEvent } from 'react'
 import { InputHTMLAttributes } from 'react'
+import './styles.css'
 
 interface InputTextProps extends InputHTMLAttributes<HTMLInputElement>{
-   // Já herda type, name, placeholder, value, onChange, etc. do InputHTMLAttributes
-   // adicionado o label
-
    label?: string;
-
 }
-
 
 export const InputText: React.FC<InputTextProps> = ({ label, ...rest }) => {
     return (
-      <div> 
+      <div className="form-floating"> 
+        <input {...rest} placeholder=" " />
         {label && ( 
           <label htmlFor={rest.name}>{label}</label>
         )}
-        <input {...rest} />
       </div>
     );
   };

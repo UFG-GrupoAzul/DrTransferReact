@@ -5,6 +5,7 @@ const Sidebar = () => {
   const menuItems = [
     { path: '/patient', label: 'Pacientes' },
     { path: '/doctor', label: 'Doutores' },
+    { path: '/specialty', label: 'Especialidades' },
   ];
 
   return (

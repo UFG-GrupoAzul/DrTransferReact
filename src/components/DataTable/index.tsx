@@ -12,15 +12,47 @@ interface DataTableProps<T> {
   columns: Column<T>[];
   className?: string;
   onRowClick?: (item: T) => void;
+  title?: string;
+  onEdit?: (item: T) => void;
+  showEditButton?: boolean;
 }
 
-function DataTable<T>({ data, columns, className = '', onRowClick }: DataTableProps<T>) {
+function DataTable<T>({ 
+  data, 
+  columns, 
+  className = '', 
+  onRowClick,
+  title,
+  onEdit,
+  showEditButton = false
+}: DataTableProps<T>) {
+  const allColumns = [...columns];
+  
+  if (showEditButton) {
+    allColumns.push({
+      field: 'actions' as keyof T,
+      header: 'Ações',
+      render: (item: T) => (
+        <button 
+          onClick={(e) => {
+            e.stopPropagation();
+            onEdit?.(item);
+          }}
+          className="edit-button"
+        >
+          Editar
+        </button>
+      )
+    });
+  }
+
   return (
     <div className={`datatable-wrapper ${className}`}>
+      {title && <h2 className="datatable-title">{title}</h2>}
       <table className="datatable">
         <thead>
           <tr>
-            {columns.map((column, index) => (
+            {allColumns.map((column, index) => (
               <th key={index} className="datatable-header">
                 {column.header}
               </th>
@@ -34,7 +66,7 @@ function DataTable<T>({ data, columns, className = '', onRowClick }: DataTablePr
               onClick={() => onRowClick?.(item)}
               className={onRowClick ? 'clickable' : ''}
             >
-              {columns.map((column, colIndex) => (
+              {allColumns.map((column, colIndex) => (
                 <td key={`${rowIndex}-${colIndex}`} className="datatable-cell">
                   {column.render
                     ? column.render(item)
@@ -45,7 +77,7 @@ function DataTable<T>({ data, columns, className = '', onRowClick }: DataTablePr
           ))}
           {data.length === 0 && (
             <tr>
-              <td colSpan={columns.length} className="datatable-no-data">
+              <td colSpan={allColumns.length} className="datatable-no-data">
                 Nenhum registro encontrado
               </td>
             </tr>

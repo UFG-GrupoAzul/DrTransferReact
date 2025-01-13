@@ -6,6 +6,6 @@
 .content {
   flex: 1;
   padding: 2rem;
-  margin-left: 250px; /* Mesma largura do sidebar */
+  margin-left: calc(250px + 2rem); /* Mesma largura do sidebar */
   background-color: #f5f5f5;
 } 
