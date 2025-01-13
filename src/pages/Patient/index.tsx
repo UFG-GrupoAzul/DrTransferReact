@@ -1,72 +1,195 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Panel from '../../components/Panel';
 import DataTable from '../../components/DataTable';
 import { InputText } from '../../components/InputText';
 import { Select } from '../../components/Select';
+import ConfirmDialog from '../../components/ConfirmDialog';
+import patientService, { Patient } from '../../services/patientService';
+import enumService, { EnumItem } from '../../services/enumService';
 import './styles.css';
 
-export interface Patient {
-  id: number;
-  name: string;
-  cpf: string;
-  gender: string;
-}
-
-const Patient = () => {
-  const [newPatient, setNewPatient] = useState({
+const PatientPage = () => {
+  const [list, setList] = useState<Patient[]>([]);
+  const [item, setItem] = useState({
     name: '',
+    birthDate: '',
     cpf: '',
-    gender: ''
+    gender: '',
+    phone: '',
+    bloodType: ''
   });
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [confirmDialog, setConfirmDialog] = useState({
+    isOpen: false,
+    id: null as string | null,
+    name: ''
+  });
+  const [genders, setGenders] = useState<EnumItem[]>([]);
+  const [bloodTypes, setBloodTypes] = useState<EnumItem[]>([]);
 
-  const genders = [
-    { value: 'M', label: 'Masculino' },
-    { value: 'F', label: 'Feminino' },
-    { value: 'O', label: 'Outro' }
-  ];
+  useEffect(() => {
+    loadData();
+    loadGenders();
+    loadBloodTypes();
+  }, []);
 
-  const handleUserInput = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const formatDate = (dateString: string) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
+  };
+
+  const loadData = async () => {
+    try {
+      const data = await patientService.getAll();
+      setList(data);
+    } catch (error) {
+      console.error('Erro ao carregar dados:', error);
+    }
+  };
+
+  const loadGenders = async () => {
+    try {
+      const data = await enumService.getGenders();
+      setGenders(data);
+    } catch (error) {
+      console.error('Erro ao carregar gêneros:', error);
+    }
+  };
+
+  const loadBloodTypes = async () => {
+    try {
+      const data = await enumService.getBloodTypes();
+      console.log(data);
+      setBloodTypes(data);
+    } catch (error) {
+      console.error('Erro ao carregar tipos sanguíneos:', error);
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setNewPatient(prev => ({
+    setItem(prev => ({
       ...prev,
       [name]: value
     }));
   };
 
-  const handleCreatePatient = () => {
-    // Implementação do handleCreatePatient
+  const handleSubmit = async () => {
+    try {
+      if (isEditing && editingId) {
+        await patientService.update(editingId, item);
+      } else {
+        await patientService.create(item);
+      }
+      
+      await loadData();
+      resetForm();
+    } catch (error) {
+      console.error('Erro ao salvar:', error);
+    }
   };
 
-  const handleDeletePatient = (id: number) => {
-    // Implementação do handleDeletePatient
+  const handleEdit = (data: Patient) => {
+    setItem({
+      name: data.person.name,
+      birthDate: data.birthDate.split('T')[0],
+      cpf: data.person.cpf,
+      gender: data.person.gender,
+      phone: data.person.phone || '',
+      bloodType: data.bloodType
+    });
+    setIsEditing(true);
+    setEditingId(data.id);
   };
 
-  const handleEditPatient = (patient: Patient) => {
-    // Implementação do handleEditPatient
+  const handleDeleteClick = (data: Patient) => {
+    setConfirmDialog({
+      isOpen: true,
+      id: data.id,
+      name: data.person.name
+    });
   };
 
-  // Exemplo de dados - substitua pela sua implementação real
-  const patients = [
-    { id: 1, name: 'João Silva', cpf: '123.456.789-00', gender: 'M' },
-    { id: 2, name: 'Maria Santos', cpf: '987.654.321-00', gender: 'F' }
-  ];
+  const handleConfirmDelete = async () => {
+    if (confirmDialog.id) {
+      try {
+        await patientService.delete(confirmDialog.id);
+        await loadData();
+      } catch (error) {
+        console.error('Erro ao excluir:', error);
+      }
+    }
+    setConfirmDialog({ isOpen: false, id: null, name: '' });
+  };
+
+  const handleCancelDelete = () => {
+    setConfirmDialog({ isOpen: false, id: null, name: '' });
+  };
+
+  const resetForm = () => {
+    setItem({
+      name: '',
+      birthDate: '',
+      cpf: '',
+      gender: '',
+      phone: '',
+      bloodType: ''
+    });
+    setIsEditing(false);
+    setEditingId(null);
+  };
 
   const columns = [
-    { field: 'name' as const, header: 'Nome' },
-    { field: 'cpf' as const, header: 'CPF' },
     { 
-      field: 'gender' as const, 
+      field: 'person' as const, 
+      header: 'Nome',
+      render: (data: Patient) => data.person.name
+    },
+    { 
+      field: 'person' as const, 
+      header: 'CPF',
+      render: (data: Patient) => data.person.cpf
+    },
+    { 
+      field: 'birthDate' as const, 
+      header: 'Data de Nascimento',
+      render: (data: Patient) => formatDate(data.birthDate)
+    },
+    { 
+      field: 'person' as const, 
       header: 'Gênero',
-      render: (patient: Patient) => {
-        const gender = genders.find(g => g.value === patient.gender);
-        return gender ? gender.label : patient.gender;
+      render: (data: Patient) => {
+        const gender = genders.find(g => g.value === data.person.gender);
+        return gender ? gender.label : data.person.gender;
+      }
+    },
+    { 
+      field: 'person' as const, 
+      header: 'Telefone',
+      render: (data: Patient) => data.person.phone || '-'
+    },
+    { 
+      field: 'bloodType' as const, 
+      header: 'Tipo Sanguíneo',
+      render: (data: Patient) => {
+        const bloodType = bloodTypes.find(bt => bt.value === data.bloodType);
+        return bloodType ? bloodType.label : data.bloodType;
       }
     },
     {
       field: 'id' as const,
       header: 'Ações',
-      render: (patient: Patient) => (
-        <button onClick={() => handleDeletePatient(patient.id)} className="delete-button">
+      render: (data: Patient) => (
+        <button 
+          onClick={() => handleDeleteClick(data)} 
+          className="delete-button"
+        >
           Excluir
         </button>
       )
@@ -75,17 +198,29 @@ const Patient = () => {
 
   return (
     <div>
-      <Panel title="Cadastro de Paciente">
+      <Panel title={isEditing ? "Editar Paciente" : "Cadastro de Paciente"}>
         <div className="form-grid">
           <div className="col-4">
             <div className="form-group">
               <InputText
                 type="text"
                 name="name"
-                placeholder="Nome"
-                value={newPatient.name}
+                placeholder="Nome do Paciente"
+                value={item.name}
                 label="Nome"
-                onChange={handleUserInput}
+                onChange={handleInputChange}
+              />
+            </div>
+          </div>
+
+          <div className="col-4">
+            <div className="form-group">
+              <InputText
+                type="date"
+                name="birthDate"
+                value={item.birthDate}
+                label="Data de Nascimento"
+                onChange={handleInputChange}
               />
             </div>
           </div>
@@ -96,9 +231,9 @@ const Patient = () => {
                 type="text"
                 name="cpf"
                 placeholder="CPF"
-                value={newPatient.cpf}
+                value={item.cpf}
                 label="CPF"
-                onChange={handleUserInput}
+                onChange={handleInputChange}
               />
             </div>
           </div>
@@ -108,32 +243,71 @@ const Patient = () => {
               <Select
                 name="gender"
                 label="Gênero"
-                value={newPatient.gender}
-                onChange={handleUserInput}
+                value={item.gender}
+                onChange={handleInputChange}
                 options={genders}
+                placeholder="Selecione o gênero"
+              />
+            </div>
+          </div>
+
+          <div className="col-4">
+            <div className="form-group">
+              <InputText
+                type="tel"
+                name="phone"
+                placeholder="Telefone"
+                value={item.phone}
+                label="Telefone"
+                onChange={handleInputChange}
+              />
+            </div>
+          </div>
+
+          <div className="col-4">
+            <div className="form-group">
+              <Select
+                name="bloodType"
+                label="Tipo Sanguíneo"
+                value={item.bloodType}
+                onChange={handleInputChange}
+                options={bloodTypes}
+                placeholder="Selecione o tipo sanguíneo"
               />
             </div>
           </div>
 
           <div className="form-actions">
-            <button className="btn-primary" onClick={handleCreatePatient}>
-              Adicionar Paciente
+            {isEditing && (
+              <button className="btn-secondary" onClick={resetForm}>
+                Cancelar
+              </button>
+            )}
+            <button className="btn-primary" onClick={handleSubmit}>
+              {isEditing ? 'Atualizar' : 'Adicionar'} Paciente
             </button>
           </div>
         </div>
       </Panel>
 
-      <Panel title="Lista de Pacientes">
-        <DataTable 
-          data={patients}
-          columns={columns}
-          title="Pacientes Cadastrados"
-          showEditButton={true}
-          onEdit={handleEditPatient}
-        />
-      </Panel>
+      <DataTable 
+        data={list}
+        columns={columns}
+        title="Pacientes Cadastrados"
+        showEditButton={true}
+        onEdit={handleEdit}
+      />
+
+      <ConfirmDialog
+        isOpen={confirmDialog.isOpen}
+        title="Confirmar Exclusão"
+        message="Tem certeza que deseja excluir o paciente {itemName}?"
+        itemName={confirmDialog.name}
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+      />
     </div>
   );
 };
 
-export default Patient;
+export default PatientPage;
