@@ -4,6 +4,7 @@ import DataTable from '../../components/DataTable';
 import { InputText } from '../../components/InputText';
 import { Select } from '../../components/Select';
 import ConfirmDialog from '../../components/ConfirmDialog';
+import { Toast, ToastMessage } from '../../components/Toast';
 import patientService, { Patient } from '../../services/patientService';
 import enumService, { EnumItem } from '../../services/enumService';
 import './styles.css';
@@ -19,20 +20,25 @@ const PatientPage = () => {
     bloodType: ''
   });
   const [isEditing, setIsEditing] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<number | null>(null);
   const [confirmDialog, setConfirmDialog] = useState({
     isOpen: false,
-    id: null as string | null,
+    id: null as number | null,
     name: ''
   });
   const [genders, setGenders] = useState<EnumItem[]>([]);
   const [bloodTypes, setBloodTypes] = useState<EnumItem[]>([]);
+  const [toast, setToast] = useState<ToastMessage | null>(null);
 
   useEffect(() => {
     loadData();
     loadGenders();
     loadBloodTypes();
   }, []);
+
+  const showToast = (message: ToastMessage) => {
+    setToast(message);
+  };
 
   const formatDate = (dateString: string) => {
     if (!dateString) return '';
@@ -49,7 +55,11 @@ const PatientPage = () => {
       const data = await patientService.getAll();
       setList(data);
     } catch (error) {
-      console.error('Erro ao carregar dados:', error);
+      showToast({
+        severity: 'error',
+        summary: 'Erro ao carregar dados',
+        detail: 'Não foi possível carregar a lista de pacientes.'
+      });
     }
   };
 
@@ -58,17 +68,24 @@ const PatientPage = () => {
       const data = await enumService.getGenders();
       setGenders(data);
     } catch (error) {
-      console.error('Erro ao carregar gêneros:', error);
+      showToast({
+        severity: 'error',
+        summary: 'Erro ao carregar gêneros',
+        detail: 'Não foi possível carregar a lista de gêneros.'
+      });
     }
   };
 
   const loadBloodTypes = async () => {
     try {
       const data = await enumService.getBloodTypes();
-      console.log(data);
       setBloodTypes(data);
     } catch (error) {
-      console.error('Erro ao carregar tipos sanguíneos:', error);
+      showToast({
+        severity: 'error',
+        summary: 'Erro ao carregar tipos sanguíneos',
+        detail: 'Não foi possível carregar a lista de tipos sanguíneos.'
+      });
     }
   };
 
@@ -80,18 +97,68 @@ const PatientPage = () => {
     }));
   };
 
+  const validateForm = () => {
+    const errors = [];
+    
+    if (!item.name?.trim()) {
+      errors.push('Nome é obrigatório');
+    }
+    if (!item.birthDate) {
+      errors.push('Data de Nascimento é obrigatória');
+    }
+    if (!item.cpf?.trim()) {
+      errors.push('CPF é obrigatório');
+    }
+    if (!item.gender) {
+      errors.push('Gênero é obrigatório');
+    }
+    if (!item.bloodType) {
+      errors.push('Tipo Sanguíneo é obrigatório');
+    }
+
+    if (errors.length > 0) {
+      showToast({
+        severity: 'warn',
+        summary: 'Campos obrigatórios',
+        detail: errors.join('\n')
+      });
+      return false;
+    }
+
+    return true;
+  };
+
   const handleSubmit = async () => {
+    if (!validateForm()) {
+      return;
+    }
+
     try {
       if (isEditing && editingId) {
         await patientService.update(editingId, item);
+        showToast({
+          severity: 'success',
+          summary: 'Paciente atualizado',
+          detail: 'O paciente foi atualizado com sucesso.'
+        });
       } else {
         await patientService.create(item);
+        showToast({
+          severity: 'success',
+          summary: 'Paciente cadastrado',
+          detail: 'O paciente foi cadastrado com sucesso.'
+        });
       }
       
       await loadData();
       resetForm();
-    } catch (error) {
-      console.error('Erro ao salvar:', error);
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.error || 'Erro ao salvar paciente';
+      showToast({
+        severity: 'error',
+        summary: 'Erro ao salvar',
+        detail: errorMessage
+      });
     }
   };
 
@@ -198,6 +265,7 @@ const PatientPage = () => {
 
   return (
     <div>
+      <Toast message={toast} onClose={() => setToast(null)} />
       <Panel title={isEditing ? "Editar Paciente" : "Cadastro de Paciente"}>
         <div className="form-grid">
           <div className="col-4">
