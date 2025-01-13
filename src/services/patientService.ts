@@ -1,6 +1,8 @@
 import axios from 'axios';
+import { API_CONFIG } from '../config/api';
 
-const API_URL = 'http://localhost:3000/patients';
+const API_URL = `${API_CONFIG.baseURL}/patients`;
+
 
 export interface Person {
   id: string;

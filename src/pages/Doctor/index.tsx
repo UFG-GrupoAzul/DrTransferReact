@@ -27,13 +27,7 @@ const Doctor = () => {
 
   return (
     <div>
-      <Panel title="Cadastro de Médico">
-        <div style={{ display: 'grid', gap: '1rem', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
-          <input type="text" placeholder="Nome" className="form-input" />
-          <input type="text" placeholder="Especialidade" className="form-input" />
-          <input type="text" placeholder="CRM" className="form-input" />
-        </div>
-      </Panel>
+    
 
       <Panel title="Lista de Médicos">
         <DataTable

@@ -4,8 +4,9 @@ import './styles.css';
 const Sidebar = () => {
   const menuItems = [
     { path: '/patient', label: 'Pacientes' },
-    { path: '/doctor', label: 'Doutores' },
+    { path: '/doctor', label: 'Médicos' },
     { path: '/specialty', label: 'Especialidades' },
+    { path: '/hospital', label: 'Hospitais' },
   ];
 
   return (

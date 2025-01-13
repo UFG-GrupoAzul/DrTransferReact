@@ -1,0 +1,9 @@
+.beds-available {
+  color: #28a745;
+  font-weight: bold;
+}
+
+.beds-unavailable {
+  color: #dc3545;
+  font-weight: bold;
+} 
