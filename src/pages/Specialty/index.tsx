@@ -3,12 +3,12 @@ import Panel from '../../components/Panel';
 import DataTable from '../../components/DataTable';
 import { InputText } from '../../components/InputText';
 import ConfirmDialog from '../../components/ConfirmDialog';
-import { Specialty, getSpecialties, createSpecialty, updateSpecialty, deleteSpecialty } from '../../services/specialtyService';
+import specialtyService, { Specialty } from '../../services/specialtyService';
 import './styles.css';
 
 const SpecialtyPage = () => {
-  const [specialties, setSpecialties] = useState<Specialty[]>([]);
-  const [newSpecialty, setNewSpecialty] = useState({
+  const [list, setList] = useState<Specialty[]>([]);
+  const [item, setItem] = useState({
     name: '',
     description: ''
   });
@@ -16,26 +16,26 @@ const SpecialtyPage = () => {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [confirmDialog, setConfirmDialog] = useState({
     isOpen: false,
-    specialtyId: null as number | null,
-    specialtyName: ''
+    id: null as number | null,
+    name: ''
   });
 
   useEffect(() => {
-    loadSpecialties();
+    loadData();
   }, []);
 
-  const loadSpecialties = async () => {
+  const loadData = async () => {
     try {
-      const data = await getSpecialties();
-      setSpecialties(data);
+      const data = await specialtyService.getAll();
+      setList(data);
     } catch (error) {
-      console.error('Erro ao carregar especialidades:', error);
+      console.error('Erro ao carregar dados:', error);
     }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setNewSpecialty(prev => ({
+    setItem(prev => ({
       ...prev,
       [name]: value
     }));
@@ -44,53 +44,53 @@ const SpecialtyPage = () => {
   const handleSubmit = async () => {
     try {
       if (isEditing && editingId) {
-        await updateSpecialty(editingId, newSpecialty);
+        await specialtyService.update(editingId, item);
       } else {
-        await createSpecialty(newSpecialty);
+        await specialtyService.create(item);
       }
       
-      await loadSpecialties();
+      await loadData();
       resetForm();
     } catch (error) {
-      console.error('Erro ao salvar especialidade:', error);
+      console.error('Erro ao salvar:', error);
     }
   };
 
-  const handleEdit = (specialty: Specialty) => {
-    setNewSpecialty({
-      name: specialty.name,
-      description: specialty.description
+  const handleEdit = (data: Specialty) => {
+    setItem({
+      name: data.name,
+      description: data.description
     });
     setIsEditing(true);
-    setEditingId(specialty.id);
+    setEditingId(data.id);
   };
 
-  const handleDeleteClick = (specialty: Specialty) => {
+  const handleDeleteClick = (data: Specialty) => {
     setConfirmDialog({
       isOpen: true,
-      specialtyId: specialty.id,
-      specialtyName: specialty.name
+      id: data.id,
+      name: data.name
     });
   };
 
   const handleConfirmDelete = async () => {
-    if (confirmDialog.specialtyId) {
+    if (confirmDialog.id) {
       try {
-        await deleteSpecialty(confirmDialog.specialtyId);
-        await loadSpecialties();
+        await specialtyService.delete(confirmDialog.id);
+        await loadData();
       } catch (error) {
-        console.error('Erro ao excluir especialidade:', error);
+        console.error('Erro ao excluir:', error);
       }
     }
-    setConfirmDialog({ isOpen: false, specialtyId: null, specialtyName: '' });
+    setConfirmDialog({ isOpen: false, id: null, name: '' });
   };
 
   const handleCancelDelete = () => {
-    setConfirmDialog({ isOpen: false, specialtyId: null, specialtyName: '' });
+    setConfirmDialog({ isOpen: false, id: null, name: '' });
   };
 
   const resetForm = () => {
-    setNewSpecialty({
+    setItem({
       name: '',
       description: ''
     });
@@ -104,9 +104,9 @@ const SpecialtyPage = () => {
     {
       field: 'id' as const,
       header: 'Ações',
-      render: (specialty: Specialty) => (
+      render: (data: Specialty) => (
         <button 
-          onClick={() => handleDeleteClick(specialty)} 
+          onClick={() => handleDeleteClick(data)} 
           className="delete-button"
         >
           Excluir
@@ -125,7 +125,7 @@ const SpecialtyPage = () => {
                 type="text"
                 name="name"
                 placeholder="Nome da Especialidade"
-                value={newSpecialty.name}
+                value={item.name}
                 label="Nome"
                 onChange={handleInputChange}
               />
@@ -138,7 +138,7 @@ const SpecialtyPage = () => {
                 type="text"
                 name="description"
                 placeholder="Descrição"
-                value={newSpecialty.description}
+                value={item.description}
                 label="Descrição"
                 onChange={handleInputChange}
               />
@@ -159,7 +159,7 @@ const SpecialtyPage = () => {
       </Panel>
 
       <DataTable 
-        data={specialties}
+        data={list}
         columns={columns}
         title="Especialidades Cadastradas"
         showEditButton={true}
@@ -170,7 +170,7 @@ const SpecialtyPage = () => {
         isOpen={confirmDialog.isOpen}
         title="Confirmar Exclusão"
         message="Tem certeza que deseja excluir a especialidade {itemName}?"
-        itemName={confirmDialog.specialtyName}
+        itemName={confirmDialog.name}
         onConfirm={handleConfirmDelete}
         onCancel={handleCancelDelete}
       />
