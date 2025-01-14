@@ -5,6 +5,7 @@ import Patient from '../pages/Patient';
 import Doctor from '../pages/Doctor';
 import Specialty from '../pages/Specialty';
 import Hospital from '../pages/Hospital';
+import RegulatoryDoctor from '../pages/RegulatoryDoctor';
 
 const AppRoutes = () => {
   return (
@@ -15,6 +16,7 @@ const AppRoutes = () => {
         <Route path="doctor" element={<Doctor />} />
         <Route path="specialty" element={<Specialty />} />
         <Route path="hospital" element={<Hospital />} />
+        <Route path="regulatory-doctor" element={<RegulatoryDoctor />} />
       </Route>
     </Routes>
   );

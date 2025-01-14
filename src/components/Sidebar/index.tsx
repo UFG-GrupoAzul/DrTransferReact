@@ -3,10 +3,11 @@ import './styles.css';
 
 const Sidebar = () => {
   const menuItems = [
+    { path: '/hospital', label: 'Hospitais' },
+    { path: '/specialty', label: 'Especialidades' },
     { path: '/patient', label: 'Pacientes' },
     { path: '/doctor', label: 'Médicos' },
-    { path: '/specialty', label: 'Especialidades' },
-    { path: '/hospital', label: 'Hospitais' },
+    { path: '/regulatory-doctor', label: 'Médicos Reguladores' }
   ];
 
   return (
