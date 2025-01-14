@@ -138,12 +138,12 @@ const DoctorPage = () => {
 
   const handleEdit = (data: Doctor) => {
     setItem({
-      name: data.Employee.person.name,
-      cpf: data.Employee.person.cpf,
-      gender: data.Employee.person.gender,
-      phone: data.Employee.person.phone,
+      name: data.name,
+      cpf: data.cpf,
+      gender: data.gender,
+      phone: data.phone,
       crm: data.crm,
-      registration: data.Employee.registration
+      registration: data.registration
     });
     setIsEditing(true);
     setEditingId(data.id);
@@ -153,7 +153,7 @@ const DoctorPage = () => {
     setConfirmDialog({
       isOpen: true,
       id: data.id,
-      name: data.Employee.person.name
+      name: data.name
     });
   };
 
@@ -197,36 +197,35 @@ const DoctorPage = () => {
 
   const columns = [
     {
-      field: 'Employee' as const,
+      field: 'name' as const,
       header: 'Nome',
-      render: (data: Doctor) => data.Employee.person.name
+      render: (data: Doctor) => data.name
     },
     {
-      field: 'Employee' as const,
+      field: 'cpf' as const,
       header: 'CPF',
-      render: (data: Doctor) => data.Employee.person.cpf
+      render: (data: Doctor) => data.cpf
     },
     {
-      field: 'Employee' as const,
+      field: 'gender' as const,
       header: 'Gênero',
       render: (data: Doctor) => {
-        const gender = genders.find(g => g.value === data.Employee.person.gender);
-        return gender ? gender.label : data.Employee.person.gender;
+        const gender = genders.find(g => g.value === data.gender);
+        return gender ? gender.label : data.gender;
       }
     },
     {
-      field: 'Employee' as const,
+      field: 'phone' as const,
       header: 'Telefone',
-      render: (data: Doctor) => data.Employee.person.phone || '-'
+      render: (data: Doctor) => data.phone || '-'
     },
     {
       field: 'crm' as const,
       header: 'CRM'
     },
     {
-      field: 'Employee' as const,
-      header: 'Matrícula',
-      render: (data: Doctor) => data.Employee.registration
+      field: 'registration' as const,
+      header: 'Matrícula'
     }
   ];
 
