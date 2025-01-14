@@ -27,15 +27,12 @@ const Doctor = () => {
 
   return (
     <div>
-    
-
-      <Panel title="Lista de Médicos">
-        <DataTable
-          data={doctors}
-          columns={columns}
-          onRowClick={handleRowClick}
-        />
-      </Panel>
+      <DataTable
+        data={doctors}
+        columns={columns}
+        onRowClick={handleRowClick}
+        title="Médicos"
+      />
     </div>
   );
 };

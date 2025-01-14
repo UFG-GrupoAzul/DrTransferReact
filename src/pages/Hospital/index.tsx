@@ -36,7 +36,6 @@ const HospitalPage = () => {
 
   return (
     <div>
-  
         <DataTable 
           data={list}
           columns={columns}
