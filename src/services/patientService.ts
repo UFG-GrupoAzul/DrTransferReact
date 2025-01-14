@@ -31,15 +31,12 @@ export interface PatientInput {
 class PatientService {
   private transformInput(data: PatientInput) {
     return {
-      birthDate: data.birthDate,
+      birthDate: new Date(data.birthDate).toISOString(),
       bloodType: data.bloodType,
-      person: {
-        name: data.name.trim(),
-        cpf: data.cpf.trim(),
-        gender: data.gender,
-        phone: data.phone?.trim() || null,
-        dType: 'PATIENT'
-      }
+      name: data.name.trim(),
+      cpf: data.cpf.trim(),
+      gender: data.gender,
+      phone: data.phone?.trim() || null,
     };
   }
 
