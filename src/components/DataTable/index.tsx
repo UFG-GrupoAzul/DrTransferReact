@@ -15,6 +15,8 @@ interface DataTableProps<T> {
   title?: string;
   onEdit?: (item: T) => void;
   showEditButton?: boolean;
+  onDelete?: (item: T) => void;
+  showDeleteButton?: boolean;
 }
 
 function DataTable<T>({ 
@@ -24,24 +26,41 @@ function DataTable<T>({
   onRowClick,
   title,
   onEdit,
-  showEditButton = false
+  showEditButton = false,
+  onDelete,
+  showDeleteButton = false
 }: DataTableProps<T>) {
   const allColumns = [...columns];
   
-  if (showEditButton) {
+  if (showEditButton || showDeleteButton) {
     allColumns.push({
       field: 'actions' as keyof T,
       header: 'Ações',
       render: (item: T) => (
-        <button 
-          onClick={(e) => {
-            e.stopPropagation();
-            onEdit?.(item);
-          }}
-          className="edit-button"
-        >
-          Editar
-        </button>
+        <div className="action-buttons">
+          {showEditButton && (
+            <button 
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit?.(item);
+              }}
+              className="edit-button"
+            >
+              Editar
+            </button>
+          )}
+          {showDeleteButton && (
+            <button 
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete?.(item);
+              }}
+              className="delete-button"
+            >
+              Excluir
+            </button>
+          )}
+        </div>
       )
     });
   }

@@ -1,0 +1,26 @@
+.multi-select {
+  width: 100%;
+  min-height: 100px;
+  padding: 0.625rem;
+  font-size: 1rem;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  background-color: #fff;
+  color: #495057;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.multi-select:focus {
+  border-color: #2196F3;
+  box-shadow: 0 0 0 0.2rem rgba(33, 150, 243, 0.25);
+  outline: none;
+}
+
+.multi-select option {
+  padding: 0.5rem;
+}
+
+.multi-select option:checked {
+  background-color: #e3f2fd;
+  color: #1976d2;
+} 

@@ -10,17 +10,17 @@ export interface Options {
 interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement>{
     name: string;
     label: string;
-    value: string;
+    value: string | string[];
     options: Options [];
     onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
     placeholder?: string;
 }
 
-export const Select = ({ label, options, placeholder = "Selecione...", ...rest }: SelectProps) => {
+export const Select = ({ label, options, placeholder = "Selecione...", multiple, value, ...rest }: SelectProps) => {
     return (
         <div className="form-floating-select">     
-            <select {...rest}>
-                <option value="">{placeholder}</option>
+            <select {...rest} multiple={multiple} value={value}>
+                {!multiple && <option value="">{placeholder}</option>}
                 {options.map((option) => (
                     <option key={option.value} value={option.value}>
                         {option.label}
