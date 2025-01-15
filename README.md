@@ -1,50 +1,32 @@
-# React + TypeScript + Vite
+# Projeto desenvolvido em React + TypeScript + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Universidade Federal de Goiás
 
-Currently, two official plugins are available:
+Programação Front-End Avançada<br/>
+Prof.: Daniel Ferreira Monteiro<br/>
+Alunos:<br/>
+Alexsandro Beserra Bastos<br/>
+Danillo Tomaz Parreira<br/>
+Luana Da Silva Sampaio<br/>
+Mathias Matos de Oliveira<br/>
+Sergio Castro Dos Santos Sales Cabral<br/>
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Links dos Projetos
+•⁠  ⁠Frontend: [DrTransferReact](https://github.com/UFG-GrupoAzul/DrTransferReact)
+•⁠  ⁠Backend: [UFG-Hospital-node](https://github.com/UFG-GrupoAzul/UFG-Hospital-node/tree/main)
 
-## Expanding the ESLint configuration
+## Casos de Uso Contemplados
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+Este projeto implementa um Sistema de Transferência de Pacientes (STP) que visa resolver problemas na movimentação de pacientes entre unidades hospitalares.
+A ideia e esforço do trabalho foi no sentido de integrar o front com o backend (que já havíamos implementado) e aplicar a biblioteca REACT no desenvolvimento do Front.
 
-- Configure the top-level `parserOptions` property like this:
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
-
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
-
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+O trabalho implementou:
+- CRUD completo(entidade patient) no front end, aderindo à diretiva para o trabalho.
+- Mensagens de erro na interface do usuário
+- Separação de camadas e responsabilidade: services, componentes, páginas e rotas separados.
+- Requisições HTTP em outras entidades utilizando axio 
+- Hooks do react (useState, useEffect)
+- Componentes funcionais e componentes reutilizáveis
+- Props
+- Event Handler
