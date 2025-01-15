@@ -8,7 +8,8 @@ const Sidebar = () => {
     { path: '/patient', label: 'Pacientes' },
     { path: '/doctor', label: 'Médicos' },
     { path: '/regulatory-doctor', label: 'Médicos Reguladores' },
-    { path: '/request', label: 'Solicitações' }
+    { path: '/request', label: 'Solicitações' },
+    { path: '/transfer', label: 'Transferências' }
   ];
 
   return (
