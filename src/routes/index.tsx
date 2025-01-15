@@ -7,7 +7,7 @@ import Specialty from '../pages/Specialty';
 import Hospital from '../pages/Hospital';
 import RegulatoryDoctor from '../pages/RegulatoryDoctor';
 import Request from '../pages/Request';
-
+import Transfer from '../pages/Transfer';
 const AppRoutes = () => {
   return (
     <Routes>
@@ -19,6 +19,7 @@ const AppRoutes = () => {
         <Route path="hospital" element={<Hospital />} />
         <Route path="regulatory-doctor" element={<RegulatoryDoctor />} />
         <Route path="request" element={<Request />} />
+        <Route path="transfer" element={<Transfer />} />
       </Route>
     </Routes>
   );
