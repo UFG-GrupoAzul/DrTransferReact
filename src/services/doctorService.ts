@@ -4,27 +4,29 @@ export interface DoctorInput {
     name: string;
     cpf: string;
     phone: string;
+    crm: string;
     registration: string;
-    crm: string;
     gender: string;
-}
-
-interface DoctorResponse {
-    id: string;
-    crm: string;
-    Employee: {
-        registration: string;
-        person: {
-            cpf: string;
-            phone: string;
-            name: string;
-            gender: string;
-        }
-    }
 }
 
 export interface Doctor extends DoctorInput {
     id: string;
+}
+
+interface DoctorResponse {
+    id: string;
+    createdAt: string;
+    updatedAt: string;
+    crm: string;
+    Employee: {
+        registration: string;
+        person: {
+            name: string;
+            cpf: string;
+            phone: string;
+            gender: string;
+        }
+    }
 }
 
 class DoctorService extends BaseService<DoctorInput> {
@@ -35,19 +37,23 @@ class DoctorService extends BaseService<DoctorInput> {
     private transformResponse(data: DoctorResponse): Doctor {
         return {
             id: data.id,
-            crm: data.crm,
-            registration: data.Employee.registration,
             name: data.Employee.person.name,
             cpf: data.Employee.person.cpf,
+            phone: data.Employee.person.phone,
             gender: data.Employee.person.gender,
-            phone: data.Employee.person.phone
+            crm: data.crm,
+            registration: data.Employee.registration
         };
     }
-
 
     async getAll(): Promise<Doctor[]> {
         const response = await super.getAll();
         return response.map(this.transformResponse);
+    }
+
+    async getById(id: string): Promise<Doctor> {
+        const response = await this.get(id);
+        return this.transformResponse(response);
     }
 
     async createDoctor(data: DoctorInput): Promise<Doctor> {

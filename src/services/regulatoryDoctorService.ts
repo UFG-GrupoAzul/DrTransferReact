@@ -9,6 +9,10 @@ export interface RegulatoryDoctorInput {
     gender: string;
 }
 
+export interface RegulatoryDoctor extends RegulatoryDoctorInput {
+    id: string;
+}
+
 interface RegulatoryDoctorResponse {
     id: string;
     createdAt: string;
@@ -25,11 +29,6 @@ interface RegulatoryDoctorResponse {
         gender: string;
     }
 }
-
-export interface RegulatoryDoctor extends RegulatoryDoctorInput {
-    id: string;
-}
-
 class RegulatoryDoctorService extends BaseService<RegulatoryDoctorInput> {
     constructor() {
         super('/regulatoryDoctors');
@@ -47,6 +46,7 @@ class RegulatoryDoctorService extends BaseService<RegulatoryDoctorInput> {
         };
     }
 
+
     async getAll(): Promise<RegulatoryDoctor[]> {
         const response = await super.getAll();
         return response.map(this.transformResponse);
@@ -60,10 +60,6 @@ class RegulatoryDoctorService extends BaseService<RegulatoryDoctorInput> {
     async updateRegulatoryDoctor(id: string, data: RegulatoryDoctorInput): Promise<RegulatoryDoctor> {
         const response = await this.update(id, data);
         return this.transformResponse(response);
-    }
-
-    async delete(id: string): Promise<void> {
-        await super.delete(id);
     }
 }
 

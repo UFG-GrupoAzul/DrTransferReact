@@ -7,7 +7,8 @@ const Sidebar = () => {
     { path: '/specialty', label: 'Especialidades' },
     { path: '/patient', label: 'Pacientes' },
     { path: '/doctor', label: 'Médicos' },
-    { path: '/regulatory-doctor', label: 'Médicos Reguladores' }
+    { path: '/regulatory-doctor', label: 'Médicos Reguladores' },
+    { path: '/request', label: 'Solicitações' }
   ];
 
   return (
@@ -19,9 +20,9 @@ const Sidebar = () => {
       </div>
       <nav className="sidebar-nav">
         {menuItems.map((item) => (
-          <Link 
-            key={item.path} 
-            to={item.path} 
+          <Link
+            key={item.path}
+            to={item.path}
             className="sidebar-link"
           >
             {item.label}

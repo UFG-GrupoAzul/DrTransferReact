@@ -1,5 +1,4 @@
-import { useState, useEffect } from 'react';
-import Panel from '../../components/Panel';
+import { useEffect, useState } from 'react';
 import DataTable from '../../components/DataTable';
 import hospitalService, { Hospital } from '../../services/hospitalService';
 import './styles.css';

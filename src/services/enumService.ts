@@ -4,6 +4,7 @@ import { API_CONFIG } from '../config/api';
 const BASE_PATH = '/enums';
 
 export interface EnumItem {
+  id: string;
   value: string;
   label: string;
 }
@@ -20,6 +21,11 @@ class EnumService {
 
   async getBloodTypes(): Promise<EnumItem[]> {
     const response = await axios.get(this.formatPath('bloodType'));
+    return response.data;
+  }
+
+  async getClassifications(): Promise<EnumItem[]> {
+    const response = await axios.get(this.formatPath('classification'));
     return response.data;
   }
 }

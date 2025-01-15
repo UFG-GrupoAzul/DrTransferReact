@@ -1,7 +1,7 @@
 import { BaseService } from './baseService';
 
 export interface Specialty {
-  id: number;
+  id: string;
   name: string;
   description: string;
 }
@@ -9,6 +9,11 @@ export interface Specialty {
 class SpecialtyService extends BaseService<Specialty> {
   constructor() {
     super('/specialties');
+  }
+
+  async getById(id: string): Promise<Specialty> {
+    const response = await this.get(id);
+    return response;
   }
 }
 

@@ -1,0 +1,106 @@
+.autocomplete-select {
+    position: relative;
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+.autocomplete-label {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: transparent;
+    color: #6c757d;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+    pointer-events: none;
+    transform-origin: left top;
+    padding: 0 0.25rem;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.autocomplete-select.focused .autocomplete-label,
+.autocomplete-select.has-value .autocomplete-label {
+    top: 0;
+    transform: translateY(-50%) scale(0.85);
+    background-color: white;
+    color: #007bff;
+    z-index: 1;
+}
+
+.autocomplete-container {
+    position: relative;
+}
+
+.autocomplete-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.625rem;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 1rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    background-color: transparent;
+}
+
+.autocomplete-input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.autocomplete-input:disabled {
+    background-color: #e9ecef;
+    cursor: not-allowed;
+}
+
+.options-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    max-height: 200px;
+    overflow-y: auto;
+    background-color: white;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-top: 0.25rem;
+    padding: 0;
+    list-style: none;
+}
+
+.option-item {
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.option-item:hover {
+    background-color: #f8f9fa;
+}
+
+.option-item.selected {
+    background-color: #e9ecef;
+    font-weight: 500;
+}
+
+.option-item.selected:hover {
+    background-color: #dee2e6;
+}
+
+.loading-indicator {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+.required {
+    color: #dc3545;
+    margin-left: 0.25rem;
+}

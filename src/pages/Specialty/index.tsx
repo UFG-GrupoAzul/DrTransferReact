@@ -3,8 +3,15 @@ import Panel from '../../components/Panel';
 import DataTable from '../../components/DataTable';
 import { InputText } from '../../components/InputText';
 import ConfirmDialog from '../../components/ConfirmDialog';
-import specialtyService, { Specialty } from '../../services/specialtyService';
+import specialtyService from '../../services/specialtyService';
 import './styles.css';
+import { Toast, ToastMessage } from '../../components/Toast';
+
+interface Specialty {
+  id: string;
+  name: string;
+  description: string;
+}
 
 const SpecialtyPage = () => {
   const [list, setList] = useState<Specialty[]>([]);
@@ -13,16 +20,22 @@ const SpecialtyPage = () => {
     description: ''
   });
   const [isEditing, setIsEditing] = useState(false);
-  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [confirmDialog, setConfirmDialog] = useState({
     isOpen: false,
-    id: null as number | null,
+    id: null as string | null,
     name: ''
   });
+  const [toast, setToast] = useState<ToastMessage | null>(null);
+
 
   useEffect(() => {
     loadData();
   }, []);
+
+  const showToast = (message: ToastMessage) => {
+    setToast(message);
+  };
 
   const loadData = async () => {
     try {
@@ -41,18 +54,32 @@ const SpecialtyPage = () => {
     }));
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     try {
-      if (isEditing && editingId) {
+      if (editingId) {
         await specialtyService.update(editingId, item);
+        showToast({
+          severity: 'success',
+          summary: 'Sucesso',
+          detail: 'Especialidade atualizada com sucesso!'
+        });
       } else {
         await specialtyService.create(item);
+        showToast({
+          severity: 'success',
+          summary: 'Sucesso',
+          detail: 'Especialidade cadastrada com sucesso!'
+        });
       }
-      
       await loadData();
       resetForm();
-    } catch (error) {
-      console.error('Erro ao salvar:', error);
+    } catch (error: any) {
+      showToast({
+        severity: 'error',
+        summary: 'Erro',
+        detail: error.response?.data?.message || 'Erro ao salvar especialidade'
+      });
     }
   };
 
@@ -105,8 +132,8 @@ const SpecialtyPage = () => {
       field: 'id' as const,
       header: 'Ações',
       render: (data: Specialty) => (
-        <button 
-          onClick={() => handleDeleteClick(data)} 
+        <button
+          onClick={() => handleDeleteClick(data)}
           className="delete-button"
         >
           Excluir
@@ -117,6 +144,7 @@ const SpecialtyPage = () => {
 
   return (
     <div>
+      <Toast message={toast} onClose={() => setToast(null)} />
       <Panel title={isEditing ? "Editar Especialidade" : "Cadastro de Especialidade"}>
         <div className="form-grid">
           <div className="col-6">
@@ -158,7 +186,7 @@ const SpecialtyPage = () => {
         </div>
       </Panel>
 
-      <DataTable 
+      <DataTable
         data={list}
         columns={columns}
         title="Especialidades Cadastradas"

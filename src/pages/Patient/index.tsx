@@ -20,10 +20,10 @@ const PatientPage = () => {
     bloodType: ''
   });
   const [isEditing, setIsEditing] = useState(false);
-  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [confirmDialog, setConfirmDialog] = useState({
     isOpen: false,
-    id: null as number | null,
+    id: null as string | null,
     name: ''
   });
   const [genders, setGenders] = useState<EnumItem[]>([]);
@@ -98,8 +98,8 @@ const PatientPage = () => {
   };
 
   const validateForm = () => {
-    const errors = [];
-    
+    const errors: string[] = [];
+
     if (!item.name?.trim()) {
       errors.push('Nome é obrigatório');
     }
@@ -149,7 +149,7 @@ const PatientPage = () => {
           detail: 'O paciente foi cadastrado com sucesso.'
         });
       }
-      
+
       await loadData();
       resetForm();
     } catch (error: any) {
@@ -164,11 +164,11 @@ const PatientPage = () => {
 
   const handleEdit = (data: Patient) => {
     setItem({
-      name: data.person.name,
+      name: data.name,
       birthDate: data.birthDate.split('T')[0],
-      cpf: data.person.cpf,
-      gender: data.person.gender,
-      phone: data.person.phone || '',
+      cpf: data.cpf,
+      gender: data.gender,
+      phone: data.phone || '',
       bloodType: data.bloodType
     });
     setIsEditing(true);
@@ -179,7 +179,7 @@ const PatientPage = () => {
     setConfirmDialog({
       isOpen: true,
       id: data.id,
-      name: data.person.name
+      name: data.name
     });
   };
 
@@ -187,9 +187,18 @@ const PatientPage = () => {
     if (confirmDialog.id) {
       try {
         await patientService.delete(confirmDialog.id);
+        showToast({
+          severity: 'success',
+          summary: 'Paciente excluído',
+          detail: 'O paciente foi excluído com sucesso.'
+        });
         await loadData();
       } catch (error) {
-        console.error('Erro ao excluir:', error);
+        showToast({
+          severity: 'error',
+          summary: 'Erro ao excluir',
+          detail: 'Não foi possível excluir o paciente.'
+        });
       }
     }
     setConfirmDialog({ isOpen: false, id: null, name: '' });
@@ -213,167 +222,139 @@ const PatientPage = () => {
   };
 
   const columns = [
-    { 
-      field: 'person' as const, 
-      header: 'Nome',
-      render: (data: Patient) => data.person.name
+    {
+      field: 'name' as keyof Patient,
+      header: 'Nome'
     },
-    { 
-      field: 'person' as const, 
-      header: 'CPF',
-      render: (data: Patient) => data.person.cpf
+    {
+      field: 'cpf' as keyof Patient,
+      header: 'CPF'
     },
-    { 
-      field: 'birthDate' as const, 
+    {
+      field: 'birthDate' as keyof Patient,
       header: 'Data de Nascimento',
       render: (data: Patient) => formatDate(data.birthDate)
     },
-    { 
-      field: 'person' as const, 
+    {
+      field: 'gender' as keyof Patient,
       header: 'Gênero',
       render: (data: Patient) => {
-        const gender = genders.find(g => g.value === data.person.gender);
-        return gender ? gender.label : data.person.gender;
+        const gender = genders.find(g => g.value === data.gender);
+        return gender ? gender.label : data.gender;
       }
     },
-    { 
-      field: 'person' as const, 
+    {
+      field: 'phone' as keyof Patient,
       header: 'Telefone',
-      render: (data: Patient) => data.person.phone || '-'
+      render: (data: Patient) => data.phone || '-'
     },
-    { 
-      field: 'bloodType' as const, 
+    {
+      field: 'bloodType' as keyof Patient,
       header: 'Tipo Sanguíneo',
       render: (data: Patient) => {
         const bloodType = bloodTypes.find(bt => bt.value === data.bloodType);
         return bloodType ? bloodType.label : data.bloodType;
       }
-    },
-    {
-      field: 'id' as const,
-      header: 'Ações',
-      render: (data: Patient) => (
-        <button 
-          onClick={() => handleDeleteClick(data)} 
-          className="delete-button"
-        >
-          Excluir
-        </button>
-      )
     }
   ];
 
   return (
-    <div>
-      <Toast message={toast} onClose={() => setToast(null)} />
+    <div className="patient-page">
       <Panel title={isEditing ? "Editar Paciente" : "Cadastro de Paciente"}>
-        <div className="form-grid">
+        <form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }} className="form-grid">
           <div className="col-4">
-            <div className="form-group">
-              <InputText
-                type="text"
-                name="name"
-                placeholder="Nome do Paciente"
-                value={item.name}
-                label="Nome"
-                onChange={handleInputChange}
-              />
-            </div>
+            <InputText
+              label="Nome"
+              name="name"
+              value={item.name}
+              onChange={handleInputChange}
+              required
+            />
           </div>
 
           <div className="col-4">
-            <div className="form-group">
-              <InputText
-                type="date"
-                name="birthDate"
-                value={item.birthDate}
-                label="Data de Nascimento"
-                onChange={handleInputChange}
-              />
-            </div>
+            <InputText
+              type="date"
+              label="Data de Nascimento"
+              name="birthDate"
+              value={item.birthDate}
+              onChange={handleInputChange}
+              required
+            />
           </div>
 
           <div className="col-4">
-            <div className="form-group">
-              <InputText
-                type="text"
-                name="cpf"
-                placeholder="CPF"
-                value={item.cpf}
-                label="CPF"
-                onChange={handleInputChange}
-              />
-            </div>
+            <InputText
+              label="CPF"
+              name="cpf"
+              value={item.cpf}
+              onChange={handleInputChange}
+              required
+            />
           </div>
 
           <div className="col-4">
-            <div className="form-group">
-              <Select
-                name="gender"
-                label="Gênero"
-                value={item.gender}
-                onChange={handleInputChange}
-                options={genders}
-                placeholder="Selecione o gênero"
-              />
-            </div>
+            <Select
+              label="Gênero"
+              name="gender"
+              value={item.gender}
+              onChange={handleInputChange}
+              options={genders}
+              required
+            />
           </div>
 
           <div className="col-4">
-            <div className="form-group">
-              <InputText
-                type="tel"
-                name="phone"
-                placeholder="Telefone"
-                value={item.phone}
-                label="Telefone"
-                onChange={handleInputChange}
-              />
-            </div>
+            <InputText
+              type="tel"
+              label="Telefone"
+              name="phone"
+              value={item.phone}
+              onChange={handleInputChange}
+            />
           </div>
 
           <div className="col-4">
-            <div className="form-group">
-              <Select
-                name="bloodType"
-                label="Tipo Sanguíneo"
-                value={item.bloodType}
-                onChange={handleInputChange}
-                options={bloodTypes}
-                placeholder="Selecione o tipo sanguíneo"
-              />
-            </div>
+            <Select
+              label="Tipo Sanguíneo"
+              name="bloodType"
+              value={item.bloodType}
+              onChange={handleInputChange}
+              options={bloodTypes}
+              required
+            />
           </div>
 
           <div className="form-actions">
-            {isEditing && (
-              <button className="btn-secondary" onClick={resetForm}>
-                Cancelar
-              </button>
-            )}
-            <button className="btn-primary" onClick={handleSubmit}>
-              {isEditing ? 'Atualizar' : 'Adicionar'} Paciente
+            <button type="button" className="btn-secondary" onClick={resetForm}>
+              Cancelar
+            </button>
+            <button type="submit" className="btn-primary">
+              {isEditing ? 'Atualizar' : 'Cadastrar'}
             </button>
           </div>
-        </div>
+        </form>
       </Panel>
 
-      <DataTable 
+      <DataTable
+        title="Lista de Pacientes"
         data={list}
         columns={columns}
-        title="Pacientes Cadastrados"
-        showEditButton={true}
         onEdit={handleEdit}
+        onDelete={handleDeleteClick}
+        showEditButton
+        showDeleteButton
       />
 
       <ConfirmDialog
         isOpen={confirmDialog.isOpen}
-        title="Confirmar Exclusão"
-        message="Tem certeza que deseja excluir o paciente {itemName}?"
-        itemName={confirmDialog.name}
+        title="Confirmar exclusão"
+        message={`Deseja realmente excluir o paciente ${confirmDialog.name}?`}
         onConfirm={handleConfirmDelete}
         onCancel={handleCancelDelete}
       />
+
+      <Toast message={toast} onClose={() => setToast(null)} />
     </div>
   );
 };
